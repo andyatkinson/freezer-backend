@@ -13,9 +13,9 @@ type Item struct {
 }
 
 func getItems(c echo.Context) error {
-  var a1 = Item{Name: "meat", AddedOn: "2020-01-01"}
-  var a2 = Item{Name: "veggies", AddedOn: "2020-02-01"}
-  var a3 = Item{Name: "popsicles", AddedOn: "2020-03-01"}
+  var a1 = Item{Name: "Family Lasagna (4)", AddedOn: "2020-01-01"}
+  var a2 = Item{Name: "Frozen Peas bag (8 oz)", AddedOn: "2020-02-01"}
+  var a3 = Item{Name: "Popsicles (8)", AddedOn: "2020-03-01"}
   var a = []Item{a1, a2, a3}
 
   return c.JSON(http.StatusOK, a)
