@@ -1,24 +1,32 @@
 package main
 
 import (
+  "fmt"
+  "time"
   "net/http"
 
   "github.com/labstack/echo"
   "github.com/labstack/echo/middleware"
+
+  "github.com/jinzhu/gorm"
+  _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+var err error
+
 type Item struct {
-  Name string `json:"name" xml:"name" form:"name" query:"name"`
-  AddedOn string `json:"addedOn" xml:"addedOn" form:"addedOn" query:"addedOn"`
+  gorm.Model
+  Name string `json:"name"`
+  AddedOn string `json:"addedOn"`
 }
 
-func getItems(c echo.Context) error {
-  var a1 = Item{Name: "Family Lasagna (4)", AddedOn: "2020-01-01"}
-  var a2 = Item{Name: "Frozen Peas bag (8 oz)", AddedOn: "2020-02-01"}
-  var a3 = Item{Name: "Popsicles (8)", AddedOn: "2020-03-01"}
-  var a = []Item{a1, a2, a3}
-
-  return c.JSON(http.StatusOK, a)
+func allItems(db *gorm.DB) func(echo.Context) error {
+  return func(c echo.Context) error {
+    var items []Item
+    db.Find(&items)
+    fmt.Println("{}", items)
+    return c.JSON(http.StatusOK, items)
+  }
 }
 
 func saveItem(c echo.Context) error {
@@ -34,6 +42,19 @@ func saveItem(c echo.Context) error {
 func main() {
   e := echo.New()
 
+  db, err := gorm.Open("postgres", "host=localhost port=5432 user=andy dbname=freezer_development sslmode=disable")
+  if err != nil {
+    fmt.Println(err.Error())
+    panic("failed to connect database")
+  }
+  db.DB().SetConnMaxLifetime(time.Minute*5);
+  db.DB().SetMaxIdleConns(0);
+  db.DB().SetMaxOpenConns(5);
+  //defer db.Close()
+
+  // Migrate the schema
+  db.AutoMigrate(&Item{})
+
   // CORS default
   // Allows requests from any origin wth GET, HEAD, PUT, POST or DELETE method.
   // e.Use(middleware.CORS())
@@ -47,7 +68,7 @@ func main() {
   }))
 
   e.POST("/items", saveItem)
-  e.GET("/items", getItems)
+  e.GET("/items", allItems(db))
 
   e.Logger.Fatal(e.Start(":1323"))
 }
