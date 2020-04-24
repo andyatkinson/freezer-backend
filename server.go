@@ -75,5 +75,5 @@ func main() {
   e.POST("/items", saveItem(db))
   e.GET("/items", allItems(db))
 
-  e.Logger.Fatal(e.Start(":1323"))
+  e.Logger.Fatal(e.Start(os.Getenv("PORT")))
 }
