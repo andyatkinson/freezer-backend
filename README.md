@@ -45,7 +45,8 @@ $ curl -H 'Content-Type: application/json' localhost:1323/items
 
 #### Creating Items
 
+As a JSON payload
+
 ```
-curl -d '{"name":"item","addedOn":"2020-01-01"}' -H 'Content-Type: application/json' localhost:1323/items
-{"name":"item","addedOn":"2020-01-01"}
+curl -d '{"name":"Chicken Nuggets","addedOn":"2020-01-01"}' -H 'Content-Type: application/json' localhost:1323/items
 ```

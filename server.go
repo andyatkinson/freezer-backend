@@ -15,8 +15,8 @@ import (
 var err error
 
 type Item struct {
-  gorm.Model
-  Name string `json:"name"`
+  gorm.Model `json:"model"`
+  Name string `gorm:"unique;not null" json:"name"`
   AddedOn string `json:"addedOn"`
 }
 
@@ -29,14 +29,18 @@ func allItems(db *gorm.DB) func(echo.Context) error {
   }
 }
 
-func saveItem(c echo.Context) error {
-  i := new(Item)
-  if err := c.Bind(i); err != nil {
-    return err
-  }
+func saveItem(db *gorm.DB) func(echo.Context) error {
+  return func(c echo.Context) error {
+    i := new(Item)
+    // NOTE: default binder supports decoding application/json
+    // binding is below
+    if err = c.Bind(i); err != nil {
+      return err
+    }
+    db.Create(&i)
 
-  // just return it as created
-  return c.JSON(http.StatusCreated, i)
+    return c.JSON(http.StatusCreated, i)
+  }
 }
 
 func main() {
@@ -67,7 +71,7 @@ func main() {
     AllowMethods: []string{http.MethodOptions, http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
   }))
 
-  e.POST("/items", saveItem)
+  e.POST("/items", saveItem(db))
   e.GET("/items", allItems(db))
 
   e.Logger.Fatal(e.Start(":1323"))
