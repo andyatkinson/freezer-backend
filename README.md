@@ -50,3 +50,11 @@ As a JSON payload
 ```
 curl -d '{"name":"Chicken Nuggets","addedOn":"2020-01-01"}' -H 'Content-Type: application/json' localhost:1323/items
 ```
+
+## Heroku
+
+Set Go version
+
+```
+heroku config:set GOVERSION=go1.9
+```

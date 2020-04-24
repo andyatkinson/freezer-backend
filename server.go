@@ -1,6 +1,7 @@
 package main
 
 import (
+  "os"
   "fmt"
   "time"
   "net/http"
@@ -46,7 +47,7 @@ func saveItem(db *gorm.DB) func(echo.Context) error {
 func main() {
   e := echo.New()
 
-  db, err := gorm.Open("postgres", "host=localhost port=5432 user=andy dbname=freezer_development sslmode=disable")
+  db, err := gorm.Open("postgres", os.Getenv("DATABASE_URL"))
   if err != nil {
     fmt.Println(err.Error())
     panic("failed to connect database")
