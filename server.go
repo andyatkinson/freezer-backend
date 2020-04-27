@@ -47,6 +47,7 @@ func saveItem(db *gorm.DB) func(echo.Context) error {
 func main() {
   e := echo.New()
 
+  // Local setup: export DATABASE_URL="host=localhost port=5432 user=andy dbname=freezer_development sslmode=disable"
   db, err := gorm.Open("postgres", os.Getenv("DATABASE_URL"))
   if err != nil {
     fmt.Println(err.Error())
@@ -75,5 +76,9 @@ func main() {
   e.POST("/items", saveItem(db))
   e.GET("/items", allItems(db))
 
-  e.Logger.Fatal(e.Start(os.Getenv("PORT")))
+  port := os.Getenv("PORT")
+  if port == "" {
+    port = "1323"
+  }
+  e.Logger.Fatal(e.Start(":" + port))
 }
