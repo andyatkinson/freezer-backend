@@ -13,13 +13,9 @@ Running locally:
 go run server.go
 ```
 
-### Installing Dependencies
+### Dependencies
 
-Example:
-
-```
-go get -u github.com/lib/pq/...
-```
+Using Go modules
 
 ### Data Seeding
 
